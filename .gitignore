@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 
 # temp files from audio playback
-lawn_*.wav
+hallway_*.wav
 
 # os junk
 Thumbs.db
