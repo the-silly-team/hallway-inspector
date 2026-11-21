@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""DOORSOFT INSPECTOR - standalone viewer for the .dr* asset family.
+"""SILLYSOFT LAWN INSPECTOR - standalone viewer for the .sl* asset family.
 
 Zero external dependencies. Python 3.8+ with tkinter (stdlib).
 
-    python doorsoft_inspector.py [file.drtx ...]
+    python lawn_inspector.py [file.sltx ...]
 
 Shows the decoded field layout with offsets, previews images, plays audio,
 resolves cross-file references, and dumps raw bytes. Nothing here is a text
@@ -43,22 +43,22 @@ BAD = "#ff6b7d"
 WARN = "#ffc36b"
 
 EXTS = [
-    (".drtx", "DOORSOFT texture"),
-    (".drau", "DOORSOFT audio"),
-    (".drcl", "DOORSOFT collision"),
-    (".drlv", "DOORSOFT level"),
-    (".drsc", "DOORSOFT scene"),
-    (".drmf", "DOORSOFT manifest"),
+    (".sltx", "SILLYSOFT texture"),
+    (".slau", "SILLYSOFT audio"),
+    (".slcl", "SILLYSOFT collision"),
+    (".sllv", "SILLYSOFT level"),
+    (".slsc", "SILLYSOFT scene"),
+    (".slmf", "SILLYSOFT manifest"),
 ]
 KNOWN_EXT = {e for e, _ in EXTS}
 
 MAGIC_LABEL = {
-    "DRTX": ("TEXTURE", ACCENT),
-    "DRAU": ("AUDIO", ACCENT2),
-    "DRCL": ("COLLISION", WARN),
-    "DRLV": ("LEVEL SOURCE", "#7ec8ff"),
-    "DRSC": ("COMPILED SCENE", "#ffa8d0"),
-    "DRMF": ("PACKAGE MANIFEST", "#ffd98a"),
+    "SLTX": ("TEXTURE", ACCENT),
+    "SLAU": ("AUDIO", ACCENT2),
+    "SLCL": ("COLLISION", WARN),
+    "SLLV": ("LEVEL SOURCE", "#7ec8ff"),
+    "SLSC": ("COMPILED SCENE", "#ffa8d0"),
+    "SLMF": ("PACKAGE MANIFEST", "#ffd98a"),
 }
 
 
@@ -140,7 +140,7 @@ def _vec(v):
     return [round(float(x), 6) for x in v]
 
 
-def parse_drtx(r, res):
+def parse_sltx(r, res):
     w = r.u16("width")
     h = r.u16("height")
     flags = r.u8("flags")
@@ -157,7 +157,7 @@ def parse_drtx(r, res):
     })
 
 
-def parse_drau(r, res):
+def parse_slau(r, res):
     rate = r.u32("sample_rate")
     ch = r.u8("channels")
     flags = r.u8("flags")
@@ -173,7 +173,7 @@ def parse_drau(r, res):
     })
 
 
-def parse_drcl(r, res):
+def parse_slcl(r, res):
     count = r.u16("box_count")
     name = r.cstr("collision_name")
     boxes = []
@@ -185,7 +185,7 @@ def parse_drcl(r, res):
     res.update({"name": name, "boxes": boxes})
 
 
-def parse_drlv(r, res):
+def parse_sllv(r, res):
     name = r.cstr("level_name")
     spawn = r.vec3("spawn")
     amb = (r.f32("ambient.r"), r.f32("ambient.g"), r.f32("ambient.b"))
@@ -216,7 +216,7 @@ def parse_drlv(r, res):
     })
 
 
-def parse_drsc(r, res):
+def parse_slsc(r, res):
     name = r.cstr("scene_name")
     source = r.cstr("source_level")
     res["refs"].append(("file", "source level", source))
@@ -245,7 +245,7 @@ def parse_drsc(r, res):
     res.update({"name": name, "source": source, "instances": inst})
 
 
-def parse_drmf(r, res):
+def parse_slmf(r, res):
     title = r.cstr("title")
     author = r.cstr("author")
     count = r.u16("entry_count")
@@ -270,12 +270,12 @@ def parse_drmf(r, res):
 
 
 PARSERS = {
-    "DRTX": parse_drtx,
-    "DRAU": parse_drau,
-    "DRCL": parse_drcl,
-    "DRLV": parse_drlv,
-    "DRSC": parse_drsc,
-    "DRMF": parse_drmf,
+    "SLTX": parse_sltx,
+    "SLAU": parse_slau,
+    "SLCL": parse_slcl,
+    "SLLV": parse_sllv,
+    "SLSC": parse_slsc,
+    "SLMF": parse_slmf,
 }
 
 
@@ -293,7 +293,7 @@ def parse_file(path):
         "crc_ok": False, "stored_crc": 0, "calc_crc": 0,
     }
     if len(data) < 16:
-        res["error"] = "file too short to contain a DOORSOFT envelope"
+        res["error"] = "file too short to contain a SILLYSOFT envelope"
         return res
 
     r = Reader(data, res["fields"])
@@ -314,8 +314,8 @@ def parse_file(path):
         "0x%08X %s" % (stored, "OK" if res["crc_ok"] else "MISMATCH"), 4,
     ))
 
-    if vendor != "DRSOFT":
-        res["error"] = "vendor is %r, expected 'DRSOFT'" % vendor
+    if vendor != "SILLY!":
+        res["error"] = "vendor is %r, expected 'SILLY!'" % vendor
         return res
     if magic not in PARSERS:
         res["error"] = "unknown magic %r" % magic
@@ -385,7 +385,7 @@ class InspectorApp:
 
     # ------------------------------------------------------------ ui
     def _build_ui(self):
-        self.root.title("DOORSOFT INSPECTOR // proprietary binary viewer")
+        self.root.title("SILLYSOFT LAWN INSPECTOR // proprietary binary viewer")
         self.root.geometry("1200x780")
         self.root.minsize(920, 620)
         self.root.configure(bg=BG)
@@ -419,7 +419,7 @@ class InspectorApp:
 
         top = tk.Frame(self.root, bg=BG, height=58)
         top.pack(fill="x", side="top")
-        tk.Label(top, text="DOORSOFT // INSPECTOR", bg=BG, fg=ACCENT,
+        tk.Label(top, text="SILLYSOFT // LAWN INSPECTOR", bg=BG, fg=ACCENT,
                  font=("Consolas", 15, "bold")).pack(side="left", padx=(16, 18))
         ttk.Button(top, text="  OPEN FILE  ", command=self.pick_file).pack(side="left")
         ttk.Checkbutton(top, text="resolve references", variable=self.auto_resolve,
@@ -497,7 +497,7 @@ class InspectorApp:
         self.hex_text.tag_configure("crc", foreground=WARN)
         self.nb.add(hexwrap, text=" HEX ")
 
-        self.status = tk.Label(self.root, text="DRSOFT // ready", bg=BG, fg=DIM,
+        self.status = tk.Label(self.root, text="SILLY! // ready", bg=BG, fg=DIM,
                                font=("Consolas", 9), anchor="w")
         self.status.pack(fill="x", side="bottom", padx=12, pady=(0, 6))
 
@@ -507,8 +507,8 @@ class InspectorApp:
     def pick_file(self):
         patterns = " ".join("*%s" % e for e, _ in EXTS)
         p = filedialog.askopenfilename(
-            title="Open DOORSOFT file",
-            filetypes=[("DOORSOFT assets", patterns), ("All files", "*.*")],
+            title="Open SILLYSOFT file",
+            filetypes=[("SILLYSOFT assets", patterns), ("All files", "*.*")],
         )
         if p:
             self.open_file(p)
@@ -580,7 +580,7 @@ class InspectorApp:
         if path and os.path.isfile(path):
             self.open_file(path)
         else:
-            self.status.configure(text="DRSOFT // reference target not found")
+            self.status.configure(text="SILLY! // reference target not found")
 
     # ------------------------------------------------------------ render
     def render(self):
@@ -589,7 +589,7 @@ class InspectorApp:
         if not res:
             self.path_label.configure(text="no file loaded")
             self.head_labels["magic"].configure(text="-")
-            self.status.configure(text="DRSOFT // ready")
+            self.status.configure(text="SILLY! // ready")
             return
 
         self.path_label.configure(text=res["path"], fg=DIM)
@@ -604,7 +604,7 @@ class InspectorApp:
             text="CRC %s  0x%08X" % ("OK" if ok else "BAD", res["stored_crc"]),
             fg=OK if ok else BAD)
         self.status.configure(
-            text="DRSOFT // %s // %s // %d fields // %d references"
+            text="SILLY! // %s // %s // %d fields // %d references"
                  % (res["name"], label, len(res["fields"]), len(res["refs"])))
 
         self._render_structure(res)
@@ -665,21 +665,21 @@ class InspectorApp:
         if res.get("error"):
             self._banner("PARSE ERROR", res["error"], BAD)
             return
-        if magic == "DRTX":
+        if magic == "SLTX":
             self._preview_texture(res)
-        elif magic == "DRAU":
+        elif magic == "SLAU":
             self._preview_audio(res)
-        elif magic == "DRCL":
+        elif magic == "SLCL":
             self._preview_collision(res)
-        elif magic == "DRLV":
+        elif magic == "SLLV":
             self._preview_json(res, {
                 "name": res["name"], "spawn": res["spawn"],
                 "ambient": res["ambient"], "objects": res["objects"]})
-        elif magic == "DRSC":
+        elif magic == "SLSC":
             self._preview_json(res, {
                 "name": res["name"], "source": res["source"],
                 "instances": res["instances"]})
-        elif magic == "DRMF":
+        elif magic == "SLMF":
             self._preview_json(res, {
                 "title": res["title"], "author": res["author"],
                 "entries": res["entries"]})
@@ -794,7 +794,7 @@ class InspectorApp:
         if winsound is None:
             return
         self._stop_audio()
-        fd, path = tempfile.mkstemp(suffix=".wav", prefix="drsoft_")
+        fd, path = tempfile.mkstemp(suffix=".wav", prefix="lawn_")
         os.close(fd)
         try:
             self._write_wav(res, path)
@@ -853,7 +853,7 @@ class InspectorApp:
         if p:
             try:
                 self._write_wav(res, p)
-                self.status.configure(text="DRSOFT // exported %s" % p)
+                self.status.configure(text="SILLY! // exported %s" % p)
             except Exception as e:
                 messagebox.showerror("Export failed", str(e))
 

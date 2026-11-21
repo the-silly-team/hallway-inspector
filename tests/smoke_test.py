@@ -5,18 +5,18 @@ import sys
 import tkinter as tk
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import doorsoft_inspector as d
+import lawn_inspector as d
 
 SAMPLES = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "samples")
 )
 FILES = [
-    "menu.drtx",
-    "tone.drau",
-    "collision.drcl",
-    "level.drlv",
-    "scene.drsc",
-    "manifest.drmf",
+    "menu.sltx",
+    "tone.slau",
+    "collision.slcl",
+    "level.sllv",
+    "scene.slsc",
+    "manifest.slmf",
 ]
 
 root = tk.Tk()
