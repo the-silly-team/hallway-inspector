@@ -1,12 +1,7 @@
-# DOORSOFT INSPECTOR 🚪🔍
+# DOORSOFT INSPECTOR
 
 **a standalone native GUI for the DOORSOFT `.dr*` asset family.**
-
-not a godot scene. not a plugin. not electron. just python's stdlib `tkinter` in a real win32 window — launches instantly, no packages to install, no node_modules the size of a small moon.
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/the-silly-team/the-door/main/docs/final_play_small.png" alt="the game these assets come from" width="640">
-</p>
+ just python's stdlib `tkinter` in a real win32 window — launches instantly, no packages to install, no node_modules the size of a small moon.
 
 ## launch
 
